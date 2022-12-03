@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
 
 from solutions.utils import ReadFile
 import os
@@ -55,10 +54,8 @@ def solution(data):
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    data = ReadFile(dir_path + "/input.txt").data_separated_by_breakline()
+    data = ReadFile(dir_path + "/input.txt").get_data_separated_by_breakline()
     solution(data)
 
-if __name__ =="__main__":
-    main()
 
 

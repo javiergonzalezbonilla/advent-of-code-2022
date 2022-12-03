@@ -6,7 +6,7 @@ class ReadFile:
         with open(self.path, 'r') as f:
             self.lines = f.readlines()
 
-    def data_separated_by_breakline(self):
+    def get_data_separated_by_breakline(self):
         items = []
         all_items = []
         for line in  self.lines:
@@ -16,3 +16,9 @@ class ReadFile:
             else:
                 items.append(int(line.replace("\n", "")))
         return all_items
+
+    def get_data_from_raw_table(self):
+        items = []
+        for line in self.lines:
+            items.append(line.replace("\n", "").split(" "))
+        return items
