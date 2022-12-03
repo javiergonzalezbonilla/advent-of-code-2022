@@ -22,3 +22,9 @@ class ReadFile:
         for line in self.lines:
             items.append(line.replace("\n", "").split(" "))
         return items
+
+    def get_data_from_line(self):
+        items = []
+        for line in self.lines:
+            items.append(line.replace("\n", ""))
+        return items
