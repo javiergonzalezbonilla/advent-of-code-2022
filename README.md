@@ -7,4 +7,5 @@
 
 ```sh
 conda create --name adventofcode python=3.9
+conda activate adventofcode
 ```
