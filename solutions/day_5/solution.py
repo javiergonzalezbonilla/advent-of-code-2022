@@ -1,4 +1,5 @@
 import os
+
 from solutions import utils
 
 
@@ -19,7 +20,7 @@ class Stack:
         if self.is_empty():
             raise Exception("Empty stack")
         return self.stack.pop()
-    
+
     def push(self, value):
         if self.size and self.get_size() > self.size:
             raise Exception("Stack overflow")
@@ -33,18 +34,19 @@ class Stack:
     def add_n(self, values):
         self.stack.extend(values)
 
-
     def view_top(self):
         return self.stack[-1]
 
 
 def solution(stacks_data, movements_data, multiple_crates=False):
-    
-    stacks = [Stack(stack=[*stack_data][::-1])  for stack_data in stacks_data]
-    
+
+    stacks = [Stack(stack=[*stack_data][::-1]) for stack_data in stacks_data]
+
     for movement in movements_data:
-        [crates_count, from_stack_index, to_stack_index] = [int(data) for data in movement.split(',')]
-        
+        [crates_count, from_stack_index, to_stack_index] = [
+            int(data) for data in movement.split(",")
+        ]
+
         from_stack = stacks[from_stack_index - 1]
         to_stack = stacks[to_stack_index - 1]
 
@@ -54,7 +56,7 @@ def solution(stacks_data, movements_data, multiple_crates=False):
         else:
             for _ in range(crates_count):
                 crate = from_stack.pop()
-                to_stack.push(crate) 
+                to_stack.push(crate)
 
     top = "".join([stack.view_top() for stack in stacks])
     print(f"Top elements on stacks: {top}")
@@ -63,6 +65,8 @@ def solution(stacks_data, movements_data, multiple_crates=False):
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     stacks_data = utils.ReadFile(dir_path + "/inputs/stacks.txt").get_data_from_line()
-    movements_data = utils.ReadFile(dir_path + "/inputs/movements.txt").get_data_from_line()
+    movements_data = utils.ReadFile(
+        dir_path + "/inputs/movements.txt"
+    ).get_data_from_line()
     solution(stacks_data, movements_data)
     solution(stacks_data, movements_data, True)
