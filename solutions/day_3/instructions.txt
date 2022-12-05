@@ -1,3 +1,7 @@
+Advent of Code[About][Events][Shop][Settings][Log Out]Javier Gonzalez-Bonilla 5*
+  {:year 2022}[Calendar][AoC++][Sponsors][Leaderboard][Stats]
+Our sponsors help make Advent of Code possible:
+Sentry.io - More than 3.5 million developers across 85,000 organizations ship better software, faster, with Sentry. What are you waiting for?
 --- Day 3: Rucksack Reorganization ---
 One Elf has the important job of loading all of the rucksacks with supplies for the jungle journey. Unfortunately, that Elf didn't quite follow the packing instructions, and so a few items now need to be rearranged.
 
@@ -57,3 +61,10 @@ In the first group, the only item type that appears in all three rucksacks is lo
 Priorities for these items must still be found to organize the sticker attachment efforts: here, they are 18 (r) for the first group and 52 (Z) for the second group. The sum of these is 70.
 
 Find the item type that corresponds to the badges of each three-Elf group. What is the sum of the priorities of those item types?
+
+Answer: 
+ 
+
+Although it hasn't changed, you can still get your puzzle input.
+
+You can also [Share] this puzzle.
