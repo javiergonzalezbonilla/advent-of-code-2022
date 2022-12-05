@@ -19,8 +19,6 @@ def solution(section_assignments):
     return fully_contained, with_overlap 
 
 
-
-
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     section_assignments = utils.ReadFile(dir_path + "/input.txt").get_data_from_line()
