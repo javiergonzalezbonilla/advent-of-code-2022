@@ -17,7 +17,7 @@ class Stack:
         return False
 
     def pop(self):
-        if self.is_empty():
+        if self.stack.is_empty():
             raise Exception("Empty stack")
         return self.stack.pop()
 
