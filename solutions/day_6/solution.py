@@ -10,7 +10,7 @@ def are_not_different_characters(characters, window_len):
 
 def get_start_of_datastream(signal, window_len):
     index = 0
-    while are_not_different_characters(signal[index : index + window_len], window_len):
+    while are_not_different_characters(signal[index: index + window_len], window_len):
         index += 1
     return index + window_len
 
