@@ -1,8 +1,12 @@
 import os
 import pdb
+
 from solutions.utils import ReadFile
 
-MEMORY_MAP = dict()
+LIMIT_SIZE = 100000
+VALID_DIRECTORIES = set()
+TOTAL_SPACE = 70000000
+NEEDED_SPACE = 30000000
 
 
 class File:
@@ -12,10 +16,6 @@ class File:
 
     def __repr__(self):
         return f"File: {self.name} -- size: {self.size}"
-
-LIMIT_SIZE = 100000
-
-VALID_DIRECTORIES = set()
 
 
 class Directory:
@@ -71,6 +71,8 @@ class Directory:
                 return directory
 
     def change_directory_to_parent(self, args):
+        if self.parent is None:
+            return self
         return self.parent
 
 
@@ -117,7 +119,6 @@ class ExecuteCommandLines:
             changed_directory = fnc(*args)
 
             if changed_directory:
-                print(changed_directory)
                 directory = changed_directory
         return self.execute_command_lines(command_lines[1:], directory)
 
@@ -125,7 +126,7 @@ class ExecuteCommandLines:
         self.execute_command_lines(self.command_lines, self.directory)
 
 
-def solution(commands):
+def create_file_system(commands):
     file_system = Directory("/")
     VALID_DIRECTORIES.add(file_system)
     rcl = ReadCommandLines(commands)
@@ -135,12 +136,42 @@ def solution(commands):
     return file_system
 
 
+def find_smallest_directory(file_system):
+    def find_directories(directory):
+        directories = []
+        directories.extend(directory.directories)
+        for directory in directory.directories:
+            directories.extend(find_directories(directory))
+        return directories
+
+    all_directories = find_directories(file_system)
+    all_directories.append(file_system)
+    all_directories = sorted(all_directories, key=lambda x: x.size, reverse=False)
+
+    available_space = TOTAL_SPACE - file_system.size
+    required_space_to_delete = NEEDED_SPACE - available_space
+
+    directory_to_delete = None
+    for index, directory in enumerate(all_directories):
+        if directory.size <= required_space_to_delete:
+            directory_to_delete = directory
+            current_index = index
+    directory_to_delete = all_directories[current_index + 1]
+
+    pdb.set_trace()
+    return find_directories
+
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     command_lines = ReadFile(dir_path + "/input.txt").get_data_from_line()
-    file_system = solution(command_lines)
-    print(f"Valid Directories: {VALID_DIRECTORIES}")
-    total_size_valid_directories = sum([directory.size for directory in  VALID_DIRECTORIES])
-    print(f"Total size Valid Directories {total_size_valid_directories}")
+    file_system = create_file_system(command_lines)
+    # print(f"Valid Directories: {VALID_DIRECTORIES}")
+    total_size_valid_directories = sum(
+        [directory.size for directory in VALID_DIRECTORIES]
+    )
+    print(f"Valid Directories total size: {total_size_valid_directories}")
+
+    find_smallest_directory(file_system)
+
     return file_system
