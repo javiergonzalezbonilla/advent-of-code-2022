@@ -1,8 +1,6 @@
 import os
 from solutions.utils import ReadFile
 
-WINDOW_LEN = 4
-
 
 def are_not_different_characters(characters, window_len):
     return len(set([*characters])) != window_len

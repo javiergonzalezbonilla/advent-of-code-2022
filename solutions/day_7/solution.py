@@ -1,0 +1,128 @@
+import os
+from solutions.utils import ReadFile
+
+
+MEMORY_MAP = dict()
+
+
+
+class File:
+    
+    def __init__(self, name, size):
+        self.name = name
+        self.size = size
+    
+    def __repr__(self):
+        return f"File: {self.name} -- size: {self.size}"
+
+class Directory:
+    
+    def __init__(self, name, parent=None):
+        self.directories = []
+        self.files = [] 
+        self.parent = parent
+        self.name = name
+        self.size = 0
+
+    def __repr__(self) -> str:
+        return self.name
+
+    def directory_exists(self, directory_name):
+        directory_names = [str(directory) for directory in self.directories]
+        return directory_name in directory_names
+
+    def file_exists(self, file_name):
+        files_names = [str(_file) for _file in self.files]
+        return file_name in files_names
+
+    def insert_directory(self, directory_name):
+        if not self.directory_exists(directory_name):
+            directory = Directory(directory_name, parent=self)
+            self.directories.append(directory)
+
+    def insert_file(self, name, size):
+        if not self.file_exists(name):
+            _file = File(name, size)
+            self.files.append(_file)
+
+    def get_directory_size(self):
+        return 0
+
+    def change_directory(self, directory_name):
+        for directory in self.directories:
+            if directory.name == directory_name:
+                return directory
+
+    def change_directory_to_parent(self, args):
+        return self.parent
+
+    def ls(self, ls):
+        pass
+
+
+class ReadCommandLines:
+
+    def __init__(self, command_lines):
+        self.commands = command_lines
+
+    def parse_command_line(self, line):
+        if line.startswith("$ cd"):
+            path = line.split(" ")[-1]
+            if path == "..":
+                return "change_directory_to_parent", [None]
+            else:
+                return "change_directory", [path]
+        elif line == "$ ls":
+            return None, [None]
+        elif line.startswith("dir"):
+            args = line.split(" ")[-1]
+            return "insert_directory", [args]
+        else:
+            size, file_name = line.split(" ")
+            return "insert_file", [int(size), file_name]
+
+    def read_command_lines(self):
+        command_lines = []
+        for command in self.commands[1:]:
+            command_lines.append(self.parse_command_line(command))
+        return command_lines
+
+
+class ExecuteCommandLines:
+
+    def __init__(self, command_lines, directory):
+        self.command_lines = command_lines
+        self.directory = directory
+
+    def execute_command_lines(self, command_lines, directory):
+
+        if len(command_lines) == 0:
+            return 0
+
+        command, args = command_lines[0]
+        if command:
+            fnc = getattr(self.directory, command, None)
+            changed_directory = fnc(*args)
+            if changed_directory:
+                directory = changed_directory
+        return self.execute_command_lines(command_lines[1:], directory)
+
+    def execute(self):
+        self.execute_command_lines(self.command_lines, self.directory)
+
+
+
+def solution(commands):
+    directory = Directory('/')
+    rcl = ReadCommandLines(commands)
+    command_lines = rcl.read_command_lines()
+    ecl = ExecuteCommandLines(command_lines, directory)
+    ecl.execute()
+    import pdb 
+    pdb.set_trace()
+
+def main():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    command_lines = ReadFile(dir_path + "/sample_input.txt").get_data_from_line()
+    print("###Solution 1###")
+    solution(command_lines)
