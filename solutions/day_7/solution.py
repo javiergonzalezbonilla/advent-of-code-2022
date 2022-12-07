@@ -1,31 +1,33 @@
 import os
+import pdb
 from solutions.utils import ReadFile
-
 
 MEMORY_MAP = dict()
 
 
-
 class File:
-    
     def __init__(self, name, size):
         self.name = name
         self.size = size
-    
+
     def __repr__(self):
         return f"File: {self.name} -- size: {self.size}"
 
+LIMIT_SIZE = 100000
+
+VALID_DIRECTORIES = set()
+
+
 class Directory:
-    
     def __init__(self, name, parent=None):
         self.directories = []
-        self.files = [] 
+        self.files = []
         self.parent = parent
         self.name = name
         self.size = 0
 
     def __repr__(self) -> str:
-        return self.name
+        return f"Directory Name: {self.name}"
 
     def directory_exists(self, directory_name):
         directory_names = [str(directory) for directory in self.directories]
@@ -39,14 +41,29 @@ class Directory:
         if not self.directory_exists(directory_name):
             directory = Directory(directory_name, parent=self)
             self.directories.append(directory)
+            VALID_DIRECTORIES.add(directory)
 
     def insert_file(self, name, size):
         if not self.file_exists(name):
             _file = File(name, size)
             self.files.append(_file)
+            self.size += _file.size
+            self.verify_valid_directory_size(self)
+            self.update_parent_directories_size(self.parent, _file.size)
+
+    def update_parent_directories_size(self, parent, size):
+        if parent is None:
+            return
+        parent.size += size
+        self.verify_valid_directory_size(parent)
+        return self.update_parent_directories_size(parent.parent, size)
 
     def get_directory_size(self):
         return 0
+
+    def verify_valid_directory_size(self, directory):
+        if directory.size > LIMIT_SIZE and directory in VALID_DIRECTORIES:
+            VALID_DIRECTORIES.remove(directory)
 
     def change_directory(self, directory_name):
         for directory in self.directories:
@@ -56,12 +73,8 @@ class Directory:
     def change_directory_to_parent(self, args):
         return self.parent
 
-    def ls(self, ls):
-        pass
-
 
 class ReadCommandLines:
-
     def __init__(self, command_lines):
         self.commands = command_lines
 
@@ -79,7 +92,7 @@ class ReadCommandLines:
             return "insert_directory", [args]
         else:
             size, file_name = line.split(" ")
-            return "insert_file", [int(size), file_name]
+            return "insert_file", [file_name, int(size)]
 
     def read_command_lines(self):
         command_lines = []
@@ -89,7 +102,6 @@ class ReadCommandLines:
 
 
 class ExecuteCommandLines:
-
     def __init__(self, command_lines, directory):
         self.command_lines = command_lines
         self.directory = directory
@@ -101,9 +113,11 @@ class ExecuteCommandLines:
 
         command, args = command_lines[0]
         if command:
-            fnc = getattr(self.directory, command, None)
+            fnc = getattr(directory, command, None)
             changed_directory = fnc(*args)
+
             if changed_directory:
+                print(changed_directory)
                 directory = changed_directory
         return self.execute_command_lines(command_lines[1:], directory)
 
@@ -111,18 +125,22 @@ class ExecuteCommandLines:
         self.execute_command_lines(self.command_lines, self.directory)
 
 
-
 def solution(commands):
-    directory = Directory('/')
+    file_system = Directory("/")
+    VALID_DIRECTORIES.add(file_system)
     rcl = ReadCommandLines(commands)
     command_lines = rcl.read_command_lines()
-    ecl = ExecuteCommandLines(command_lines, directory)
+    ecl = ExecuteCommandLines(command_lines[1:], file_system)
     ecl.execute()
-    import pdb 
-    pdb.set_trace()
+    return file_system
+
+
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    command_lines = ReadFile(dir_path + "/sample_input.txt").get_data_from_line()
-    print("###Solution 1###")
-    solution(command_lines)
+    command_lines = ReadFile(dir_path + "/input.txt").get_data_from_line()
+    file_system = solution(command_lines)
+    print(f"Valid Directories: {VALID_DIRECTORIES}")
+    total_size_valid_directories = sum([directory.size for directory in  VALID_DIRECTORIES])
+    print(f"Total size Valid Directories {total_size_valid_directories}")
+    return file_system
