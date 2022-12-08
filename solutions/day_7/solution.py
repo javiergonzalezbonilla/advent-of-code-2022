@@ -1,10 +1,8 @@
 import os
-import pdb
-
 from solutions.utils import ReadFile
 
-LIMIT_SIZE = 100000
 VALID_DIRECTORIES = set()
+LIMIT_SIZE = 100000
 TOTAL_SPACE = 70000000
 NEEDED_SPACE = 30000000
 
@@ -27,21 +25,30 @@ class Directory:
         self.size = 0
 
     def __repr__(self) -> str:
-        return f"Directory Name: {self.name}"
+        return f"Directory Name: {self.name} - size: {self.size}"
 
     def directory_exists(self, directory_name):
-        directory_names = [str(directory) for directory in self.directories]
+        directory_names = [directory.name for directory in self.directories]
         return directory_name in directory_names
 
     def file_exists(self, file_name):
-        files_names = [str(_file) for _file in self.files]
+        files_names = [_file.name for _file in self.files]
         return file_name in files_names
 
+    def get_size(self):
+        def calculate_size(directory, total_size=0):
+            total_size += sum([_file.size for _file in directory.files])
+            for directory in directory.directories:
+                total_size += calculate_size(directory, 0)
+            return total_size
+
+        return calculate_size(self, 0)
+
     def insert_directory(self, directory_name):
-        if not self.directory_exists(directory_name):
-            directory = Directory(directory_name, parent=self)
-            self.directories.append(directory)
-            VALID_DIRECTORIES.add(directory)
+        # if not self.directory_exists(directory_name):
+        directory = Directory(directory_name, parent=self)
+        self.directories.append(directory)
+        VALID_DIRECTORIES.add(directory)
 
     def insert_file(self, name, size):
         if not self.file_exists(name):
@@ -57,9 +64,6 @@ class Directory:
         parent.size += size
         self.verify_valid_directory_size(parent)
         return self.update_parent_directories_size(parent.parent, size)
-
-    def get_directory_size(self):
-        return 0
 
     def verify_valid_directory_size(self, directory):
         if directory.size > LIMIT_SIZE and directory in VALID_DIRECTORIES:
@@ -150,28 +154,23 @@ def find_smallest_directory(file_system):
 
     available_space = TOTAL_SPACE - file_system.size
     required_space_to_delete = NEEDED_SPACE - available_space
-
-    directory_to_delete = None
+    directory_to_delete = all_directories[0]
     for index, directory in enumerate(all_directories):
         if directory.size <= required_space_to_delete:
             directory_to_delete = directory
             current_index = index
     directory_to_delete = all_directories[current_index + 1]
-
-    pdb.set_trace()
-    return find_directories
+    return directory_to_delete
 
 
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     command_lines = ReadFile(dir_path + "/input.txt").get_data_from_line()
+
     file_system = create_file_system(command_lines)
-    # print(f"Valid Directories: {VALID_DIRECTORIES}")
     total_size_valid_directories = sum(
         [directory.size for directory in VALID_DIRECTORIES]
     )
     print(f"Valid Directories total size: {total_size_valid_directories}")
-
-    find_smallest_directory(file_system)
-
-    return file_system
+    directory_to_delete = find_smallest_directory(file_system)
+    print(f"Directory to delete {directory_to_delete}")
