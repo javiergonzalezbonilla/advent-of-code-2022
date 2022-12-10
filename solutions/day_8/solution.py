@@ -1,6 +1,14 @@
 import os
 import pdb
 from solutions.utils import ReadFile
+from functools import reduce
+
+
+def manhattan_distance(point1, point2):
+    return sum(abs(val1 - val2) for val1, val2 in zip(point1, point2))
+
+
+max_scenic_score = 0
 
 
 def get_visible_trees(grid):
@@ -8,64 +16,94 @@ def get_visible_trees(grid):
     field_width = len(grid[0])
 
     def is_tree_visible(position_x, position_y, tree_height):
-
-        base_positions = [
-            {"base_pos": [-1, 0], "limit": 0, "enabled": True},
-            {"base_pos": [0, -1], "limit": 0, "enabled": True},
-            {"base_pos": [1, 0], "limit": field_height - 1, "enabled": True},
-            {"base_pos": [0, 1], "limit": field_width - 1, "enabled": True},
+        tree_positions = [
+            {
+                "direction": [-1, 0],
+                "limit": 0,
+                "enabled": True,
+                "distance": 1,
+                "visible": False,
+            },
+            {
+                "direction": [0, -1],
+                "limit": 0,
+                "enabled": True,
+                "distance": 1,
+                "visible": False,
+            },
+            {
+                "direction": [1, 0],
+                "limit": field_height - 1,
+                "enabled": True,
+                "distance": 1,
+                "visible": False,
+            },
+            {
+                "direction": [0, 1],
+                "limit": field_width - 1,
+                "enabled": True,
+                "distance": 1,
+                "visible": False,
+            },
         ]
 
-        visible = False
-
         multiplier = 1
-        while (not visible) and base_positions:
+        while [
+            position["enabled"] for position in tree_positions if position["enabled"]
+        ]:
 
-            base_positions, visible = visible_at_a_given_distance(
-                position_x, position_y, tree_height, base_positions, multiplier,
+            tree_positions = analyze_tree_positions(
+                position_x,
+                position_y,
+                tree_height,
+                tree_positions,
+                multiplier,
             )
 
-            base_positions = [
-                position for position in base_positions if position["enabled"]
-            ]
-
             multiplier += 1
-        return visible
 
-    def visible_at_a_given_distance(
+        scenic_score = reduce(
+            lambda x, y: x * y, [position["distance"] for position in tree_positions]
+        )
+
+        visible = any([position["visible"] for position in tree_positions])
+        return visible, scenic_score
+
+    def analyze_tree_positions(
         position_x,
         position_y,
         tree_height,
-        relative_tree_positions_to_check,
+        tree_positions,
         multiplier,
     ):
-        visible_on_directions = [False, False, False, False]
-        for index, position in enumerate(relative_tree_positions_to_check):
+        for tree_position in tree_positions:
+            if tree_position["enabled"]:
+                offset_y, offset_x = tree_position["direction"]
+                offset_y *= multiplier
+                offset_x *= multiplier
 
-            offset_y, offset_x = position["base_pos"]
-            offset_y *= multiplier
-            offset_x *= multiplier
+                current_distance = get_absolute_1d_distance(
+                    position_x, position_y, offset_y, offset_x
+                )
 
-            current_distance = get_current_distance(
-                position_x, position_y, offset_y, offset_x
-            )
+                visited_tree_y = position_y + offset_y
+                visited_tree_x = position_x + offset_x
 
-            visited_tree_y = position_y + offset_y
-            visited_tree_x = position_x + offset_x
+                visited_tree_height = int(grid[visited_tree_y][visited_tree_x])
 
-            visited_tree_height = int(grid[visited_tree_y][visited_tree_x])
+                if tree_height <= visited_tree_height:
+                    tree_position["enabled"] = False
+                    tree_position["distance"] = multiplier
 
-            if tree_height <= visited_tree_height:
-                position["enabled"] = False
+                if current_distance == tree_position["limit"]:
+                    if tree_height > visited_tree_height:
+                        tree_position["visible"] = True
+                    tree_position["enabled"] = False
+                    tree_position["distance"] = multiplier
 
-            if current_distance == position["limit"]:
-                if tree_height > visited_tree_height:
-                    visible_on_directions[index] = True
-                position["enabled"] = False
+        return tree_positions
 
-        return relative_tree_positions_to_check, any(visible_on_directions)
-
-    def get_current_distance(position_x, position_y, offset_y, offset_x):
+    def get_absolute_1d_distance(position_x, position_y, offset_y, offset_x):
         limit = [
             pos + offset
             for pos, offset in [[position_x, offset_x], [position_y, offset_y]]
@@ -74,17 +112,24 @@ def get_visible_trees(grid):
 
         return limit
 
+    max_scenic_score = 0
+
     visible_trees = 0
     for y_pos in range(1, field_height - 1):
         for x_pos in range(1, field_width - 1):
             current_tree_height = int(grid[y_pos][x_pos])
-            if is_tree_visible(x_pos, y_pos, current_tree_height):
-                visible_trees += 1
+            visible, scenic_score = is_tree_visible(x_pos, y_pos, current_tree_height)
 
-    print(f"\n Total trees {field_height * field_width}")
+            if visible:
+                visible_trees += 1
+            if scenic_score > max_scenic_score:
+                max_scenic_score = scenic_score
 
     all_visible_trees = visible_trees + 2 * (field_width + field_height) - 4
+
+    print(f"\n Total trees {field_height * field_width}")
     print(f"Total visible trees {all_visible_trees}")
+    print(f"Max scenic score {max_scenic_score}")
 
 
 def main():
@@ -93,5 +138,8 @@ def main():
     get_visible_trees(grid)
 
 
-# sample - 21
-# current reponse 1715
+# sample - visible trees 21
+# sample - scenic score 8
+
+# visible_trees 1715
+# Max scenic score 374400
