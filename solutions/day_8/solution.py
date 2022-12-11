@@ -1,5 +1,4 @@
 import os
-import pdb
 from solutions.utils import ReadFile
 from functools import reduce
 
@@ -53,11 +52,7 @@ def get_visible_trees(grid):
         ]:
 
             tree_positions = analyze_tree_positions(
-                position_x,
-                position_y,
-                tree_height,
-                tree_positions,
-                multiplier,
+                position_x, position_y, tree_height, tree_positions, multiplier,
             )
 
             multiplier += 1
@@ -70,11 +65,7 @@ def get_visible_trees(grid):
         return visible, scenic_score
 
     def analyze_tree_positions(
-        position_x,
-        position_y,
-        tree_height,
-        tree_positions,
-        multiplier,
+        position_x, position_y, tree_height, tree_positions, multiplier,
     ):
         for tree_position in tree_positions:
             if tree_position["enabled"]:
