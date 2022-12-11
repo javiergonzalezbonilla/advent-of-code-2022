@@ -1,5 +1,4 @@
 import os
-import pdb
 import numpy as np
 from solutions.utils import ReadFile
 
@@ -31,11 +30,6 @@ def update_tail_position(head, tail, direction):
 
     x_difference = head[0] - tail[0]
     y_difference = head[1] - tail[1]
-
-    # print(f"x diff: {abs(x_difference)}")
-    # print(f"y diff: {abs(y_difference)}")
-
-    # horizontal
     if x_difference and not y_difference:
         tail[0] += x_difference - direction[0]
         return tail
@@ -65,7 +59,7 @@ def get_tail_positions(movements):
     all_tail_positions.add(tuple(tail))
     for direction, steps in movements:
         direction = directions_map[direction]
-        for step in range(int(steps)):
+        for _ in range(int(steps)):
             head = update_head_position(head, direction)
             if is_not_head_tail_valid_position(head, tail):
                 tail = update_tail_position(head, tail, direction)

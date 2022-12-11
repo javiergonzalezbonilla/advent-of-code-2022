@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
-from solutions.day_9 import solution
+from solutions.day_9.solution_1 import solution
 
 
 class TestDayNineSolutionSuite(TestCase):
