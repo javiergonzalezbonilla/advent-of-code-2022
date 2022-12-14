@@ -14,7 +14,7 @@ directions_map = {
 
 def is_not_head_tail_valid_position(head, tail):
     current_distance = euclidean_distance(head, tail)
-    if current_distance >= 2:
+    if current_distance >= 0.1 + 2**0.5:
         return True
     return False
 
@@ -37,19 +37,18 @@ def update_tail_position(head, tail):
         return tail
 
     if not x_difference and y_difference:
-        tail[1] += y_difference - np.sign(x_difference)
+        tail[1] += y_difference - np.sign(y_difference)
         return tail
-
     if x_difference and y_difference:
         if abs(x_difference) > abs(y_difference):
             tail[1] = head[1]
             tail[0] += x_difference - np.sign(x_difference)
         elif abs(y_difference) > abs(x_difference):
             tail[0] = head[0]
-            tail[1] += y_difference - np.sign(x_difference)
+            tail[1] += y_difference - np.sign(y_difference)
         else:
             tail[0] += x_difference - np.sign(x_difference)
-            tail[1] += y_difference - np.sign(x_difference)
+            tail[1] += y_difference - np.sign(y_difference)
 
     return tail
 
@@ -64,7 +63,6 @@ def get_tail_positions(movements):
         rope = update_rope(all_tail_positions, rope.copy(), direction, steps)
         display_rope(rope)
         print(f"all rope positions {rope}")
-        pdb.set_trace()
         print("\n")
 
     tails_positions_count = len(all_tail_positions)
@@ -73,7 +71,8 @@ def get_tail_positions(movements):
 
 
 def update_rope(all_tail_positions, rope, direction, steps):
-    for _ in range(int(steps)):
+    print(rope, flush=True)
+    for step in range(int(steps)):
         for index in range(len(rope)):
             if index == 0:
                 rope[0] = update_head_position(rope[0], direction)
@@ -83,6 +82,10 @@ def update_rope(all_tail_positions, rope, direction, steps):
                 if is_not_head_tail_valid_position(head, tail):
                     new_tail = update_tail_position(head.copy(), tail.copy())
                     rope[index] = new_tail.copy()
+                else:
+                    break
+            print(rope, flush=True)
+        print(f"Step {step}", flush=True)
         all_tail_positions.add(tuple(rope[-1]))
     return rope
 
