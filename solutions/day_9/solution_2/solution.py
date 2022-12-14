@@ -1,5 +1,4 @@
 import os
-import pdb
 
 import numpy as np
 from solutions.utils import ReadFile
@@ -87,4 +86,4 @@ def update_rope(all_tail_positions, rope, direction, steps):
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     movements = ReadFile(dir_path + "/input.txt").get_data_from_raw_table()
-    rope = get_tail_positions(movements)
+    get_tail_positions(movements)
