@@ -61,9 +61,6 @@ def get_tail_positions(movements):
     for direction, steps in movements:
         direction = directions_map[direction]
         rope = update_rope(all_tail_positions, rope.copy(), direction, steps)
-        display_rope(rope)
-        print(f"all rope positions {rope}")
-        print("\n")
 
     tails_positions_count = len(all_tail_positions)
     print(f"Tail position counts {tails_positions_count}")
@@ -71,8 +68,7 @@ def get_tail_positions(movements):
 
 
 def update_rope(all_tail_positions, rope, direction, steps):
-    print(rope, flush=True)
-    for step in range(int(steps)):
+    for _ in range(int(steps)):
         for index in range(len(rope)):
             if index == 0:
                 rope[0] = update_head_position(rope[0], direction)
@@ -84,67 +80,11 @@ def update_rope(all_tail_positions, rope, direction, steps):
                     rope[index] = new_tail.copy()
                 else:
                     break
-            print(rope, flush=True)
-        print(f"Step {step}", flush=True)
         all_tail_positions.add(tuple(rope[-1]))
     return rope
 
 
-def display_tails(positions):
-    positions = list(positions)
-    min_x = min(positions, key=lambda x: x[0])[0]
-    max_x = max(positions, key=lambda x: x[0])[0]
-    min_y = min(positions, key=lambda x: x[1])[1]
-    max_y = max(positions, key=lambda x: x[1])[1]
-    size_x = max_x - min_x
-    size_y = max_y - min_y
-    grid = []
-    for y in range(-40, 40):
-        row = []
-        for x in range(-40, 40):
-            row.append(".")
-        row.append("\n")
-        grid.append(row)
-
-    for position in positions:
-        x, y = position
-        x = x - min_y
-        y = y - min_x
-        print(f"x: {x}, y: {y}")
-        grid[x - min_x + 40][y - min_y + 40] = "#"
-
-    for row in reversed(grid):
-        print("".join(row))
-
-
-def display_rope(positions):
-    positions = list(positions)
-
-    grid = []
-    for y in range(-40, 40):
-        row = []
-        for x in range(-40, 40):
-            row.append(".")
-        row.append("\n")
-        grid.append(row)
-
-    for index, position in enumerate(positions):
-        x, y = position
-        x = x + 40
-        y = y + 40
-        if index == 0:
-            grid[x][y] = f"H"
-        elif index == 9:
-            grid[x][y] = f"T"
-        else:
-            grid[x][y] = "#"
-
-    for row in reversed(grid):
-        print("".join(row))
-
-
 def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    movements = ReadFile(dir_path + "/sample_input.txt").get_data_from_raw_table()
+    movements = ReadFile(dir_path + "/input.txt").get_data_from_raw_table()
     rope = get_tail_positions(movements)
-    display_tails(rope)

@@ -1,4 +1,3 @@
-
 import unittest
 from solutions.day_9.solution_2 import solution
 
