@@ -1,4 +1,5 @@
 import os
+
 from solutions.utils import ReadFile
 
 VALID_DIRECTORIES = set()

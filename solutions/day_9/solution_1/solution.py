@@ -1,5 +1,7 @@
 import os
+
 import numpy as np
+
 from solutions.utils import ReadFile
 
 directions_map = {

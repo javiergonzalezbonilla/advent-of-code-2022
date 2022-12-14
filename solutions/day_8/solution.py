@@ -1,6 +1,7 @@
 import os
-from solutions.utils import ReadFile
 from functools import reduce
+
+from solutions.utils import ReadFile
 
 
 def manhattan_distance(point1, point2):
@@ -22,6 +23,7 @@ def get_visible_trees(grid):
                 "enabled": True,
                 "distance": 1,
                 "visible": False,
+                "name": "LEFT",
             },
             {
                 "direction": [0, -1],
@@ -29,6 +31,7 @@ def get_visible_trees(grid):
                 "enabled": True,
                 "distance": 1,
                 "visible": False,
+                "name": "DOWN",
             },
             {
                 "direction": [1, 0],
@@ -36,6 +39,7 @@ def get_visible_trees(grid):
                 "enabled": True,
                 "distance": 1,
                 "visible": False,
+                "name": "UP",
             },
             {
                 "direction": [0, 1],
@@ -43,6 +47,7 @@ def get_visible_trees(grid):
                 "enabled": True,
                 "distance": 1,
                 "visible": False,
+                "name": "RIGHT",
             },
         ]
 
