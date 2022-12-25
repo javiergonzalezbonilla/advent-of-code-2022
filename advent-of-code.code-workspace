@@ -6,10 +6,10 @@
     ],
     "settings": {
         "workbench.colorCustomizations": {
-            "activityBar.background": "#03304b",
-            "activityBar.foreground": "#ffffff",
-            "titleBar.activeBackground": "#033F63",
-            "titleBar.activeForeground": "#ffffff"
+            "activityBar.background": "#093c5d",
+            "activityBar.foreground": "#1ce64f",
+            "titleBar.activeBackground": "#24648b",
+            "titleBar.activeForeground": "#1ad16f"
         },
         "files.exclude": {
             "**/*.pyc": true

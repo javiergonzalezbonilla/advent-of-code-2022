@@ -13,7 +13,7 @@ directions_map = {
 
 def is_not_head_tail_valid_position(head, tail):
     current_distance = euclidean_distance(head, tail)
-    if current_distance >= 0.1 + 2**0.5:
+    if current_distance >= 0.1 + 2 ** 0.5:
         return True
     return False
 
