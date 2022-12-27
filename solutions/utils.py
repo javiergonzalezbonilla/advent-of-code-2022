@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import yaml
+from yaml.loader import SafeLoader
 
 
 class ReadFile:
@@ -29,3 +31,10 @@ class ReadFile:
         for line in self.lines:
             items.append(line.replace("\n", ""))
         return items
+
+
+def open_yaml(path):
+    with open(path, "r") as f:
+        data = yaml.load(f, Loader=SafeLoader)
+        print(data)
+        return data
